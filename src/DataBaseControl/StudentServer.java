@@ -15,13 +15,18 @@ public class StudentServer {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			Connection conn=DriverManager.getConnection(SQL_URL, USER, PASSWORD);
 			Statement stm=conn.createStatement();
-			if(stm.execute("select * from Students where Id='"+student.GetAccount()+"'")){
-				return;
+			String sql="select count(*) from Students where Id='"+student.GetAccount()+"'";
+			ResultSet rs=stm.executeQuery(sql);
+			int count=0;
+			while(rs.next()){
+				count=rs.getInt(1);
 			}
-			else{
+			if(count==0){
 				StringBuilder sb=new StringBuilder();
 				sb.append("insert into Students values('");
 				sb.append(student.GetAccount());
+				sb.append("','");
+				sb.append(student.GetPassword());
 				sb.append("','");
 				sb.append(student.GetName());
 				sb.append("','");
@@ -34,6 +39,8 @@ public class StudentServer {
 				System.out.println(sb.toString());
 				stm.execute(sb.toString());
 			}
+			else return;
+			
 			
 		}catch(Exception e){
 			e.printStackTrace();
